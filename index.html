@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thiago Silva em Portugal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink:#f0177f;
+    --pink-dark:#9a0f52;
+    --cyan:#22b6f0;
+    --cyan-dark:#0e6f96;
+    --yellow:#f3d820;
+    --yellow-dark:#a8930c;
+    --purple:#3a1264;
+    --ink:#0a0912;
+    --white:#fbfaf7;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  html{background:var(--ink);}
+
+  body{
+    min-height:100vh;
+    font-family:'Poppins', sans-serif;
+    background:
+      linear-gradient(to bottom, var(--ink) 0%, var(--ink) 22%, transparent 46%),
+      radial-gradient(circle at 15% 8%, rgba(240,23,127,0.18), transparent 40%),
+      radial-gradient(circle at 85% 12%, rgba(34,182,240,0.18), transparent 42%),
+      radial-gradient(circle at 50% 95%, rgba(243,216,32,0.10), transparent 45%),
+      var(--ink);
+    color:var(--white);
+    display:flex;
+    justify-content:center;
+    padding:0;
+    position:relative;
+    overflow-x:hidden;
+  }
+
+  /* ---------- decorative background shapes (lifted from the logo's language) ---------- */
+  .deco{position:fixed; pointer-events:none; z-index:0; opacity:0.9;}
+
+  .tri{
+    width:0; height:0;
+    border-style:solid;
+  }
+  .tri-pink{border-width:0 12px 20px 12px; border-color:transparent transparent var(--pink) transparent; transform:rotate(18deg);}
+  .tri-cyan{border-width:0 14px 24px 14px; border-color:transparent transparent var(--cyan) transparent; transform:rotate(-25deg);}
+  .tri-yellow{border-width:0 10px 17px 10px; border-color:transparent transparent var(--yellow) transparent; transform:rotate(50deg);}
+
+  .dotfield{
+    position:fixed; z-index:0;
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:7px;
+    opacity:0.55;
+  }
+  .dotfield span{width:5px; height:5px; border-radius:50%; background:var(--pink);}
+  .dotfield.cyan span{background:var(--cyan);}
+
+  .d1{top:6%; left:4%;}
+  .d2{top:60%; right:3%;}
+  .d3{bottom:4%; left:6%;}
+
+  .t1{top:10%; left:82%;}
+  .t2{top:22%; left:4%;}
+  .t3{top:46%; left:88%;}
+  .t4{bottom:16%; left:80%;}
+  .t5{bottom:9%; left:10%;}
+  .t6{top:70%; left:6%;}
+
+  /* ---------- shell ---------- */
+  .page{
+    position:relative;
+    z-index:1;
+    width:100%;
+    max-width:440px;
+    padding:56px 22px 40px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  /* ---------- header row: avatar + name side by side ---------- */
+  .header-row{
+    display:flex;
+    align-items:center;
+    gap:20px;
+    width:auto;
+    max-width:100%;
+    margin:0 auto 10px;
+    justify-content:center;
+  }
+
+  /* ---------- avatar ---------- */
+  .avatar-wrap{
+    position:relative;
+    flex:0 0 auto;
+    width:118px; height:118px;
+  }
+  .avatar-ring{
+    position:absolute; inset:0;
+    border-radius:50%;
+    background:conic-gradient(from 210deg, var(--pink), var(--cyan), var(--yellow), var(--pink));
+    padding:4px;
+    animation:ring-spin 5s linear infinite;
+  }
+  @keyframes ring-spin{
+    from{transform:rotate(0deg);}
+    to{transform:rotate(360deg);}
+  }
+  .avatar-ring::after{
+    content:"";
+    position:absolute; inset:4px;
+    border-radius:50%;
+    background:var(--ink);
+  }
+  .avatar{
+    position:absolute; inset:9px;
+    border-radius:50%;
+    background:linear-gradient(160deg,#1b1526,#0a0912 70%);
+    overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .avatar img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  /* ---------- name block: now the client's logo image (1920x1080 → 16:9) ---------- */
+  .name-block{
+    flex:0 1 auto;
+    min-width:0;
+  }
+
+  .logo-img{
+    display:block;
+    height:112px;
+    width:auto;
+    max-width:100%;
+    object-fit:contain;
+  }
+
+  .bio{
+    margin-top:22px;
+    text-align:center;
+    max-width:320px;
+  }
+  .bio-title{
+    font-family:'Anton', sans-serif;
+    font-size:17px;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    color:var(--white);
+  }
+  .bio-tags{
+    margin-top:8px;
+    font-size:13px;
+    font-weight:600;
+    letter-spacing:0.3px;
+    color:var(--yellow);
+  }
+  .bio-tags span{
+    color:var(--pink);
+    margin:0 4px;
+  }
+  .bio-tagline{
+    margin-top:10px;
+    font-size:13.5px;
+    line-height:1.5;
+    font-weight:500;
+    color:rgba(251,250,247,0.72);
+  }
+
+  /* ---------- buttons ---------- */
+  .links{
+    width:100%;
+    margin-top:30px;
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+  }
+
+  .link-group{
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+  }
+
+  .section-label{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-left:2px;
+    font-family:'Anton', sans-serif;
+    font-size:12px;
+    letter-spacing:1.3px;
+    text-transform:uppercase;
+    color:rgba(251,250,247,0.8);
+  }
+  .section-label::before{
+    content:"";
+    width:14px; height:3px;
+    border-radius:2px;
+    background:var(--pink);
+  }
+  .section-label.yellow::before{background:var(--yellow);}
+  .section-label.pink::before{background:var(--pink);}
+  .section-label.cyan::before{background:var(--cyan);}
+
+  .btn{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    width:100%;
+    padding:18px 20px;
+    border:none;
+    border-radius:10px;
+    font-family:'Poppins', sans-serif;
+    font-weight:700;
+    font-size:15.5px;
+    text-decoration:none;
+    cursor:pointer;
+    transform:translate(0,0);
+    transition:transform 0.09s ease;
+    box-shadow:6px 6px 0 var(--shadow-color, #000);
+  }
+  .btn:active{
+    transform:translate(6px,6px);
+    box-shadow:0 0 0 var(--shadow-color, #000);
+  }
+
+  .btn .icon{
+    flex:0 0 auto;
+    width:38px; height:38px;
+    border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(0,0,0,0.14);
+    font-size:18px;
+  }
+
+  .btn .label{flex:1; line-height:1.25;}
+  .btn .sub{
+    display:block;
+    font-size:11.5px;
+    font-weight:500;
+    opacity:0.75;
+    margin-top:2px;
+  }
+
+  .btn .arrow{
+    font-size:18px;
+    opacity:0.6;
+    transform:translateX(0);
+    transition:transform 0.15s ease;
+  }
+  .btn:hover .arrow{transform:translateX(3px);}
+
+  .btn-pink{
+    background:var(--pink);
+    color:var(--white);
+    --shadow-color:var(--pink-dark);
+    outline:2px solid rgba(255,255,255,0.15);
+  }
+  .btn-cyan{
+    background:var(--cyan);
+    color:#04202b;
+    --shadow-color:var(--cyan-dark);
+    outline:2px solid rgba(0,0,0,0.08);
+  }
+  .btn-yellow{
+    background:var(--yellow);
+    color:#241d02;
+    --shadow-color:var(--yellow-dark);
+    outline:2px solid rgba(0,0,0,0.08);
+  }
+
+  /* ---------- section label above the marquee ---------- */
+  .marquee-label{
+    margin-top:28px;
+    margin-bottom:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    font-family:'Anton', sans-serif;
+    font-size:12px;
+    letter-spacing:1.3px;
+    text-transform:uppercase;
+    color:rgba(251,250,247,0.8);
+  }
+  .marquee-label::before,
+  .marquee-label::after{
+    content:"";
+    width:18px; height:2px;
+    border-radius:2px;
+    background:linear-gradient(90deg, var(--pink), var(--cyan));
+  }
+
+  /* ---------- photo marquee (4:3), same width as the buttons ---------- */
+  .marquee{
+    width:100%;
+    margin-top:0;
+    overflow:hidden;
+    -webkit-mask-image:linear-gradient(to right, transparent 0, #000 10%, #000 90%, transparent 100%);
+    mask-image:linear-gradient(to right, transparent 0, #000 10%, #000 90%, transparent 100%);
+  }
+
+  .marquee-track{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    width:max-content;
+    animation:marquee-scroll 32s linear infinite;
+  }
+
+  @keyframes marquee-scroll{
+    from{transform:translateX(0);}
+    to{transform:translateX(-50%);}
+  }
+
+  .mq-item{
+    position:relative;
+    flex:0 0 auto;
+    width:108px;
+    aspect-ratio:4/3;
+    border-radius:9px;
+    overflow:hidden;
+    background:#141018;
+    box-shadow:3px 3px 0 rgba(0,0,0,0.45);
+  }
+  .mq-item img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .mq-item.c-pink{border:2px solid var(--pink);}
+  .mq-item.c-cyan{border:2px solid var(--cyan);}
+  .mq-item.c-yellow{border:2px solid var(--yellow);}
+
+  .mq-item.empty img{display:none;}
+  .mq-item.empty{
+    background:linear-gradient(150deg, rgba(255,255,255,0.06), rgba(255,255,255,0.015));
+    border-style:dashed;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .mq-item.empty::after{
+    content:"🖼";
+    font-size:20px;
+    opacity:0.35;
+  }
+
+  /* ---------- socials ---------- */
+  .socials{
+    display:flex;
+    gap:16px;
+    margin-top:24px;
+  }
+  .social{
+    width:42px; height:42px;
+    border-radius:50%;
+    border:2px solid rgba(251,250,247,0.18);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--white);
+    text-decoration:none;
+    transition:border-color 0.15s ease, transform 0.15s ease, color 0.15s ease;
+  }
+  .social svg{
+    width:19px; height:19px;
+  }
+  .social:hover{
+    border-color:var(--pink);
+    color:var(--pink);
+    transform:translateY(-3px);
+  }
+
+  footer{
+    margin-top:34px;
+    text-align:center;
+  }
+  .footer-rights{
+    font-size:11px;
+    letter-spacing:0.4px;
+    color:rgba(251,250,247,0.35);
+  }
+  .footer-credit{
+    margin-top:6px;
+    font-size:11px;
+    letter-spacing:0.4px;
+    color:rgba(251,250,247,0.35);
+  }
+  .footer-credit a{
+    color:#ff7a25;
+    font-weight:700;
+    text-decoration:none;
+  }
+  .footer-credit a:hover{
+    text-decoration:underline;
+  }
+
+  @media (max-width:360px){
+    .logo-img{height:80px;}
+    .header-row{gap:12px;}
+    .avatar-wrap{width:90px; height:90px;}
+    .btn{padding:16px 16px;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .btn{transition:none;}
+    .avatar-ring{animation:none;}
+    .marquee-track{animation:none;}
+  }
+</style>
+</head>
+<body>
+
+  <!-- decorative shapes, echoing the logo's confetti of triangles/dots -->
+  <div class="deco tri tri-pink t1"></div>
+  <div class="deco tri tri-cyan t2"></div>
+  <div class="deco tri tri-yellow t3"></div>
+  <div class="deco tri tri-pink t4"></div>
+  <div class="deco tri tri-cyan t5"></div>
+  <div class="deco tri tri-yellow t6"></div>
+
+  <div class="deco dotfield d1">
+    <span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span>
+  </div>
+  <div class="deco dotfield cyan d2">
+    <span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span>
+  </div>
+  <div class="deco dotfield d3">
+    <span></span><span></span><span></span><span></span><span></span><span></span>
+  </div>
+
+  <main class="page">
+
+    <div class="header-row">
+      <div class="avatar-wrap">
+        <div class="avatar-ring"></div>
+        <div class="avatar"><img src="imagens/fotohero.png" alt="Thiago Silva"></div>
+      </div>
+
+      <div class="name-block">
+        <img class="logo-img" src="imagens/logo.png" alt="Thiago Silva em Portugal">
+      </div>
+    </div>
+
+    <div class="bio">
+      <p class="bio-title">Repórter e Influenciador</p>
+      <p class="bio-tags">Entrevistas <span>|</span> Bastidores <span>|</span> Cultura</p>
+      <p class="bio-tagline">Conectando artistas brasileiros na Europa</p>
+    </div>
+
+    <div class="socials">
+      <a class="social" href="https://www.instagram.com/thiagosilvatr/" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.8"/>
+          <circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.8"/>
+          <circle cx="17.4" cy="6.6" r="1.1" fill="currentColor"/>
+        </svg>
+      </a>
+      <a class="social" href="https://www.youtube.com/@ThiagoSilvaTr" target="_blank" rel="noopener" aria-label="YouTube">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2.5" y="5.5" width="19" height="13" rx="4" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M10.2 9.3L14.8 12L10.2 14.7V9.3Z" fill="currentColor"/>
+        </svg>
+      </a>
+      <a class="social" href="mailto:thiagosilvatrjobs@gmail.com" aria-label="E-mail">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2.5" y="5" width="19" height="14" rx="3" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M3.5 6.5L12 13L20.5 6.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+
+    <p class="marquee-label"><span>Artistas que já entrevistei</span></p>
+    <div class="marquee">
+      <div class="marquee-track">
+        <div class="mq-item c-pink"><img src="imagens/galeria/foto1.jpg" alt="Foto 1" onerror="this.parentElement.classList.add('empty')"></div>
+        <div class="mq-item c-yellow"><img src="imagens/galeria/foto2.jpg" alt="Foto 2" onerror="this.parentElement.classList.add('empty')"></div>
+        <div class="mq-item c-cyan"><img src="imagens/galeria/foto3.jpg" alt="Foto 3" onerror="this.parentElement.classList.add('empty')"></div>
+        <div class="mq-item c-pink"><img src="imagens/galeria/foto4.jpg" alt="Foto 4" onerror="this.parentElement.classList.add('empty')"></div>
+        <div class="mq-item c-yellow"><img src="imagens/galeria/foto5.jpg" alt="Foto 5" onerror="this.parentElement.classList.add('empty')"></div>
+        <div class="mq-item c-cyan"><img src="imagens/galeria/foto6.jpg" alt="Foto 6" onerror="this.parentElement.classList.add('empty')"></div>
+        <div class="mq-item c-pink"><img src="imagens/galeria/foto7.jpg" alt="Foto 7" onerror="this.parentElement.classList.add('empty')"></div>
+        <div class="mq-item c-yellow"><img src="imagens/galeria/foto8.jpg" alt="Foto 8" onerror="this.parentElement.classList.add('empty')"></div>
+        <div class="mq-item c-cyan"><img src="imagens/galeria/foto9.jpg" alt="Foto 9" onerror="this.parentElement.classList.add('empty')"></div>
+        <div class="mq-item c-pink"><img src="imagens/galeria/foto10.jpg" alt="Foto 10" onerror="this.parentElement.classList.add('empty')"></div>
+
+        <div class="mq-item c-pink"><img src="imagens/galeria/foto1.jpg" alt="" aria-hidden="true" onerror="this.parentElement.classList.add('empty')"></div>
+        <div class="mq-item c-yellow"><img src="imagens/galeria/foto2.jpg" alt="" aria-hidden="true" onerror="this.parentElement.classList.add('empty')"></div>
+        <div class="mq-item c-cyan"><img src="imagens/galeria/foto3.jpg" alt="" aria-hidden="true" onerror="this.parentElement.classList.add('empty')"></div>
+        <div class="mq-item c-pink"><img src="imagens/galeria/foto4.jpg" alt="" aria-hidden="true" onerror="this.parentElement.classList.add('empty')"></div>
+        <div class="mq-item c-yellow"><img src="imagens/galeria/foto5.jpg" alt="" aria-hidden="true" onerror="this.parentElement.classList.add('empty')"></div>
+        <div class="mq-item c-cyan"><img src="imagens/galeria/foto6.jpg" alt="" aria-hidden="true" onerror="this.parentElement.classList.add('empty')"></div>
+        <div class="mq-item c-pink"><img src="imagens/galeria/foto7.jpg" alt="" aria-hidden="true" onerror="this.parentElement.classList.add('empty')"></div>
+        <div class="mq-item c-yellow"><img src="imagens/galeria/foto8.jpg" alt="" aria-hidden="true" onerror="this.parentElement.classList.add('empty')"></div>
+        <div class="mq-item c-cyan"><img src="imagens/galeria/foto9.jpg" alt="" aria-hidden="true" onerror="this.parentElement.classList.add('empty')"></div>
+        <div class="mq-item c-pink"><img src="imagens/galeria/foto10.jpg" alt="" aria-hidden="true" onerror="this.parentElement.classList.add('empty')"></div>
+      </div>
+    </div>
+
+    <nav class="links">
+      <div class="link-group">
+        <p class="section-label pink">Parceria e Collabs</p>
+        <a class="btn btn-pink" href="#" target="_blank" rel="noopener">
+          <span class="icon">🤝</span>
+          <span class="label">
+            Parceria, publicidade e collabs
+            <span class="sub">Vamos trabalhar juntos</span>
+          </span>
+          <span class="arrow">→</span>
+        </a>
+      </div>
+
+      <a class="btn btn-yellow" href="#" target="_blank" rel="noopener">
+        <span class="icon">📎</span>
+        <span class="label">
+          Veja aqui meu media kit
+          <span class="sub">Números, audiência e formatos</span>
+        </span>
+        <span class="arrow">→</span>
+      </a>
+
+      <div class="link-group">
+        <p class="section-label cyan">Indicações e Descontos</p>
+        <a class="btn btn-cyan" href="https://wise.com/invite/ihpc/thiagos972" target="_blank" rel="noopener">
+          <span class="icon">💳</span>
+          <span class="label">
+            Crie aqui sua conta no Wise
+            <span class="sub">Receba e envie dinheiro sem fronteiras</span>
+          </span>
+          <span class="arrow">→</span>
+        </a>
+      </div>
+    </nav>
+
+    <footer>
+      <p class="footer-rights">Todos os direitos reservados - Thiago Silva © 2026</p>
+      <p class="footer-credit">Website desenvolvido por <a href="https://amplifying.com.br/servicos" target="_blank" rel="noopener">AMPLIFYING</a></p>
+    </footer>
+
+  </main>
+
+</body>
+</html>
