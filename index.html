@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Thiago Silva em Portugal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -38,10 +40,25 @@
     padding:0;
     position:relative;
     overflow-x:hidden;
+    opacity:0;
+    animation:page-fade-in 0.9s ease forwards;
+  }
+
+  @keyframes page-fade-in{
+    from{opacity:0;}
+    to{opacity:1;}
+  }
+
+  /* ---------- stage: bounds the decorative shapes to the content area ---------- */
+  .stage{
+    position:relative;
+    width:100%;
+    max-width:620px;
+    margin:0 auto;
   }
 
   /* ---------- decorative background shapes (lifted from the logo's language) ---------- */
-  .deco{position:fixed; pointer-events:none; z-index:0; opacity:0.9;}
+  .deco{position:absolute; pointer-events:none; z-index:0; opacity:0.9;}
 
   .tri{
     width:0; height:0;
@@ -78,6 +95,7 @@
     z-index:1;
     width:100%;
     max-width:440px;
+    margin:0 auto;
     padding:56px 22px 40px;
     display:flex;
     flex-direction:column;
@@ -99,7 +117,8 @@
   .avatar-wrap{
     position:relative;
     flex:0 0 auto;
-    width:118px; height:118px;
+    width:clamp(80px, 25vw, 118px);
+    height:clamp(80px, 25vw, 118px);
   }
   .avatar-ring{
     position:absolute; inset:0;
@@ -140,7 +159,7 @@
 
   .logo-img{
     display:block;
-    height:112px;
+    height:clamp(70px, 22vw, 112px);
     width:auto;
     max-width:100%;
     object-fit:contain;
@@ -323,6 +342,7 @@
     width:100%;
     margin-top:0;
     overflow:hidden;
+    cursor:pointer;
     -webkit-mask-image:linear-gradient(to right, transparent 0, #000 10%, #000 90%, transparent 100%);
     mask-image:linear-gradient(to right, transparent 0, #000 10%, #000 90%, transparent 100%);
   }
@@ -333,6 +353,11 @@
     gap:12px;
     width:max-content;
     animation:marquee-scroll 32s linear infinite;
+  }
+
+  .marquee:hover .marquee-track,
+  .marquee-track.paused{
+    animation-play-state:paused;
   }
 
   @keyframes marquee-scroll{
@@ -589,15 +614,14 @@
   }
 
   @media (max-width:360px){
-    .logo-img{height:80px;}
     .header-row{gap:12px;}
-    .avatar-wrap{width:90px; height:90px;}
     .btn{padding:14px 12px; gap:10px;}
     .btn .icon{width:32px; height:32px;}
     .btn .icon svg{width:16px; height:16px;}
   }
 
   @media (prefers-reduced-motion: reduce){
+    body{animation:none; opacity:1;}
     .btn{transition:none;}
     .avatar-ring{animation:none;}
     .marquee-track{animation:none;}
@@ -605,6 +629,8 @@
 </style>
 </head>
 <body>
+
+  <div class="stage">
 
   <!-- decorative shapes, echoing the logo's confetti of triangles/dots -->
   <div class="deco tri tri-pink t1"></div>
@@ -646,19 +672,19 @@
     </div>
 
     <div class="socials">
-      <a class="social" href="https://www.instagram.com/thiagosilvatr/" target="_blank" rel="noopener" aria-label="Instagram">
+      <a class="social" href="https://www.instagram.com/thiagosilvatr/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.8"/>
           <circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.8"/>
           <circle cx="17.4" cy="6.6" r="1.1" fill="currentColor"/>
         </svg>
       </a>
-      <a class="social" href="https://www.tiktok.com/@thiagosilvatr?_r=1&amp;_t=ZS-98EL02j30s9" target="_blank" rel="noopener" aria-label="TikTok">
+      <a class="social" href="https://www.tiktok.com/@thiagosilvatr?_r=1&amp;_t=ZS-98EL02j30s9" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M14.5 3.5c.5 2 2.1 3.5 4.2 3.7v2.9c-1.5 0-2.9-.45-4.1-1.25v6.35c0 3.05-2.45 5.35-5.35 5.35-1.5 0-2.85-.6-3.85-1.6-1-1-1.6-2.4-1.6-3.9 0-2.95 2.4-5.35 5.35-5.35.35 0 .7.03 1.03.1v3.02a2.6 2.6 0 00-1.03-.22 2.55 2.55 0 100 5.1 2.55 2.55 0 002.55-2.55V3.5h2.8z" fill="currentColor"/>
         </svg>
       </a>
-      <a class="social" href="https://www.youtube.com/@ThiagoSilvaTr" target="_blank" rel="noopener" aria-label="YouTube">
+      <a class="social" href="https://www.youtube.com/@ThiagoSilvaTr" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect x="2.5" y="5.5" width="19" height="13" rx="4" stroke="currentColor" stroke-width="1.8"/>
           <path d="M10.2 9.3L14.8 12L10.2 14.7V9.3Z" fill="currentColor"/>
@@ -673,36 +699,36 @@
     </div>
 
     <p class="marquee-label"><span>Artistas que já entrevistei</span></p>
-    <div class="marquee">
-      <div class="marquee-track">
-        <div class="mq-item c-pink"><img src="imagens/galeria/foto1.jpg" alt="Foto 1" onerror="this.parentElement.classList.add('empty')"></div>
-        <div class="mq-item c-yellow"><img src="imagens/galeria/foto2.jpg" alt="Foto 2" onerror="this.parentElement.classList.add('empty')"></div>
-        <div class="mq-item c-cyan"><img src="imagens/galeria/foto3.jpg" alt="Foto 3" onerror="this.parentElement.classList.add('empty')"></div>
-        <div class="mq-item c-pink"><img src="imagens/galeria/foto4.jpg" alt="Foto 4" onerror="this.parentElement.classList.add('empty')"></div>
-        <div class="mq-item c-yellow"><img src="imagens/galeria/foto5.jpg" alt="Foto 5" onerror="this.parentElement.classList.add('empty')"></div>
-        <div class="mq-item c-cyan"><img src="imagens/galeria/foto6.jpg" alt="Foto 6" onerror="this.parentElement.classList.add('empty')"></div>
-        <div class="mq-item c-pink"><img src="imagens/galeria/foto7.jpg" alt="Foto 7" onerror="this.parentElement.classList.add('empty')"></div>
-        <div class="mq-item c-yellow"><img src="imagens/galeria/foto8.jpg" alt="Foto 8" onerror="this.parentElement.classList.add('empty')"></div>
-        <div class="mq-item c-cyan"><img src="imagens/galeria/foto9.jpg" alt="Foto 9" onerror="this.parentElement.classList.add('empty')"></div>
-        <div class="mq-item c-pink"><img src="imagens/galeria/foto10.jpg" alt="Foto 10" onerror="this.parentElement.classList.add('empty')"></div>
+    <div class="marquee" id="marqueeBox">
+      <div class="marquee-track" id="marqueeTrack">
+        <div class="mq-item c-pink"><img src="imagens/galeria/foto1.jpg" alt="Foto 1"></div>
+        <div class="mq-item c-yellow"><img src="imagens/galeria/foto2.jpg" alt="Foto 2"></div>
+        <div class="mq-item c-cyan"><img src="imagens/galeria/foto3.jpg" alt="Foto 3"></div>
+        <div class="mq-item c-pink"><img src="imagens/galeria/foto4.jpg" alt="Foto 4"></div>
+        <div class="mq-item c-yellow"><img src="imagens/galeria/foto5.jpg" alt="Foto 5"></div>
+        <div class="mq-item c-cyan"><img src="imagens/galeria/foto6.jpg" alt="Foto 6"></div>
+        <div class="mq-item c-pink"><img src="imagens/galeria/foto7.jpg" alt="Foto 7"></div>
+        <div class="mq-item c-yellow"><img src="imagens/galeria/foto8.jpg" alt="Foto 8"></div>
+        <div class="mq-item c-cyan"><img src="imagens/galeria/foto9.jpg" alt="Foto 9"></div>
+        <div class="mq-item c-pink"><img src="imagens/galeria/foto10.jpg" alt="Foto 10"></div>
 
-        <div class="mq-item c-pink"><img src="imagens/galeria/foto1.jpg" alt="" aria-hidden="true" onerror="this.parentElement.classList.add('empty')"></div>
-        <div class="mq-item c-yellow"><img src="imagens/galeria/foto2.jpg" alt="" aria-hidden="true" onerror="this.parentElement.classList.add('empty')"></div>
-        <div class="mq-item c-cyan"><img src="imagens/galeria/foto3.jpg" alt="" aria-hidden="true" onerror="this.parentElement.classList.add('empty')"></div>
-        <div class="mq-item c-pink"><img src="imagens/galeria/foto4.jpg" alt="" aria-hidden="true" onerror="this.parentElement.classList.add('empty')"></div>
-        <div class="mq-item c-yellow"><img src="imagens/galeria/foto5.jpg" alt="" aria-hidden="true" onerror="this.parentElement.classList.add('empty')"></div>
-        <div class="mq-item c-cyan"><img src="imagens/galeria/foto6.jpg" alt="" aria-hidden="true" onerror="this.parentElement.classList.add('empty')"></div>
-        <div class="mq-item c-pink"><img src="imagens/galeria/foto7.jpg" alt="" aria-hidden="true" onerror="this.parentElement.classList.add('empty')"></div>
-        <div class="mq-item c-yellow"><img src="imagens/galeria/foto8.jpg" alt="" aria-hidden="true" onerror="this.parentElement.classList.add('empty')"></div>
-        <div class="mq-item c-cyan"><img src="imagens/galeria/foto9.jpg" alt="" aria-hidden="true" onerror="this.parentElement.classList.add('empty')"></div>
-        <div class="mq-item c-pink"><img src="imagens/galeria/foto10.jpg" alt="" aria-hidden="true" onerror="this.parentElement.classList.add('empty')"></div>
+        <div class="mq-item c-pink"><img src="imagens/galeria/foto1.jpg" alt="" aria-hidden="true"></div>
+        <div class="mq-item c-yellow"><img src="imagens/galeria/foto2.jpg" alt="" aria-hidden="true"></div>
+        <div class="mq-item c-cyan"><img src="imagens/galeria/foto3.jpg" alt="" aria-hidden="true"></div>
+        <div class="mq-item c-pink"><img src="imagens/galeria/foto4.jpg" alt="" aria-hidden="true"></div>
+        <div class="mq-item c-yellow"><img src="imagens/galeria/foto5.jpg" alt="" aria-hidden="true"></div>
+        <div class="mq-item c-cyan"><img src="imagens/galeria/foto6.jpg" alt="" aria-hidden="true"></div>
+        <div class="mq-item c-pink"><img src="imagens/galeria/foto7.jpg" alt="" aria-hidden="true"></div>
+        <div class="mq-item c-yellow"><img src="imagens/galeria/foto8.jpg" alt="" aria-hidden="true"></div>
+        <div class="mq-item c-cyan"><img src="imagens/galeria/foto9.jpg" alt="" aria-hidden="true"></div>
+        <div class="mq-item c-pink"><img src="imagens/galeria/foto10.jpg" alt="" aria-hidden="true"></div>
       </div>
     </div>
 
     <nav class="links">
       <div class="link-group">
         <p class="section-label pink">Parceria e Collabs</p>
-        <button type="button" class="btn btn-pink" onclick="openModal()">
+        <button type="button" class="btn btn-pink" id="openModalBtn">
           <span class="icon">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M9 15L15 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
@@ -718,7 +744,7 @@
         </button>
       </div>
 
-      <a class="btn btn-yellow" href="#" target="_blank" rel="noopener">
+      <a class="btn btn-yellow" href="#" target="_blank" rel="noopener noreferrer">
         <span class="icon">
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M6 3H14L19 8V19C19 20.1 18.1 21 17 21H6C4.9 21 4 20.1 4 19V5C4 3.9 4.9 3 6 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
@@ -735,7 +761,7 @@
 
       <div class="link-group">
         <p class="section-label cyan">Indicações e Descontos</p>
-        <a class="btn btn-cyan" href="https://wise.com/invite/ihpc/thiagos972" target="_blank" rel="noopener">
+        <a class="btn btn-cyan" href="https://wise.com/invite/ihpc/thiagos972" target="_blank" rel="noopener noreferrer">
           <span class="icon">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect x="3" y="6" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
@@ -754,15 +780,17 @@
 
     <footer>
       <p class="footer-rights">Copyright © 2026 · Thiago Silva</p>
-      <p class="footer-credit">Website desenvolvido por <a href="https://amplifying.com.br/servicos" target="_blank" rel="noopener">AMPLIFYING</a></p>
+      <p class="footer-credit">Website desenvolvido por <a href="https://amplifying.com.br/servicos" target="_blank" rel="noopener noreferrer">AMPLIFYING</a></p>
     </footer>
 
   </main>
 
+  </div>
+
   <!-- ---------- popup: parceria / publicidade / collabs ---------- -->
-  <div class="modal-overlay" id="modalOverlay" onclick="closeModalOnOverlay(event)">
+  <div class="modal-overlay" id="modalOverlay">
     <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <button type="button" class="modal-close" onclick="closeModal()" aria-label="Fechar">
+      <button type="button" class="modal-close" id="closeModalBtn" aria-label="Fechar">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
         </svg>
@@ -772,7 +800,7 @@
       <h2 id="modalTitle" class="modal-title">Que tal trabalharmos juntos?</h2>
 
       <div class="modal-cards">
-        <a class="modal-card pink" href="https://wa.me/351900000000?text=Ol%C3%A1%20Thiago!%20Quero%20falar%20sobre%20uma%20PARCERIA." target="_blank" rel="noopener">
+        <a class="modal-card pink" href="https://wa.me/351900000000?text=Ol%C3%A1%20Thiago!%20Quero%20falar%20sobre%20uma%20PARCERIA." target="_blank" rel="noopener noreferrer">
           <span class="modal-card-icon">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M9 15L15 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
@@ -789,7 +817,7 @@
           </svg>
         </a>
 
-        <a class="modal-card yellow" href="https://wa.me/351900000000?text=Ol%C3%A1%20Thiago!%20Quero%20falar%20sobre%20PUBLICIDADE." target="_blank" rel="noopener">
+        <a class="modal-card yellow" href="https://wa.me/351900000000?text=Ol%C3%A1%20Thiago!%20Quero%20falar%20sobre%20PUBLICIDADE." target="_blank" rel="noopener noreferrer">
           <span class="modal-card-icon">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M3 10V14C3 14.55 3.45 15 4 15H6L11.5 19V5L6 9H4C3.45 9 3 9.45 3 10Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
@@ -806,7 +834,7 @@
           </svg>
         </a>
 
-        <a class="modal-card cyan" href="https://wa.me/351900000000?text=Ol%C3%A1%20Thiago!%20Quero%20falar%20sobre%20uma%20COLLAB." target="_blank" rel="noopener">
+        <a class="modal-card cyan" href="https://wa.me/351900000000?text=Ol%C3%A1%20Thiago!%20Quero%20falar%20sobre%20uma%20COLLAB." target="_blank" rel="noopener noreferrer">
           <span class="modal-card-icon">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="9" cy="12" r="5.5" stroke="currentColor" stroke-width="1.8"/>
@@ -825,22 +853,7 @@
     </div>
   </div>
 
-  <script>
-    function openModal(){
-      document.getElementById('modalOverlay').classList.add('open');
-      document.body.style.overflow = 'hidden';
-    }
-    function closeModal(){
-      document.getElementById('modalOverlay').classList.remove('open');
-      document.body.style.overflow = '';
-    }
-    function closeModalOnOverlay(e){
-      if(e.target.id === 'modalOverlay'){ closeModal(); }
-    }
-    document.addEventListener('keydown', function(e){
-      if(e.key === 'Escape'){ closeModal(); }
-    });
-  </script>
+  <script src="script.js" defer></script>
 
 </body>
 </html>
