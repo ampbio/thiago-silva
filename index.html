@@ -69,7 +69,7 @@
   .tri-yellow{border-width:0 10px 17px 10px; border-color:transparent transparent var(--yellow) transparent; transform:rotate(50deg);}
 
   .dotfield{
-    position:fixed; z-index:0;
+    z-index:0;
     display:grid;
     grid-template-columns:repeat(6,1fr);
     gap:7px;
@@ -236,9 +236,9 @@
     position:relative;
     display:flex;
     align-items:center;
-    gap:14px;
+    gap:clamp(6px, 3vw, 14px);
     width:100%;
-    padding:18px 20px;
+    padding:clamp(12px, 4vw, 18px) clamp(10px, 5vw, 20px);
     border:none;
     border-radius:10px;
     font-family:'Poppins', sans-serif;
@@ -257,39 +257,49 @@
 
   .btn .icon{
     flex:0 0 auto;
-    width:38px; height:38px;
+    width:clamp(24px, 9vw, 38px);
+    height:clamp(24px, 9vw, 38px);
     border-radius:8px;
     display:flex; align-items:center; justify-content:center;
     background:rgba(0,0,0,0.14);
     color:inherit;
   }
   .btn .icon svg{
-    width:19px; height:19px;
+    width:50%;
+    height:50%;
   }
 
   .btn .label{
     flex:1;
     line-height:1.25;
-    text-align:center;
+    min-width:0;
+  }
+  .btn .label-title{
+    display:block;
+    width:fit-content;
+    max-width:100%;
+    margin:0 auto;
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
-    font-size:clamp(12.5px, 3.6vw, 15.5px);
-    min-width:0;
+    font-size:clamp(9px, 3.6vw, 15.5px);
   }
   .btn .sub{
     display:block;
-    font-size:clamp(10px, 2.7vw, 11.5px);
-    font-weight:500;
-    opacity:0.75;
-    margin-top:2px;
+    width:fit-content;
+    max-width:100%;
+    margin:2px auto 0;
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
+    font-size:clamp(7.5px, 2.3vw, 11px);
+    font-weight:500;
+    opacity:0.75;
   }
 
   .btn .arrow{
-    font-size:18px;
+    flex:0 0 auto;
+    font-size:clamp(11px, 3.5vw, 18px);
     opacity:0.6;
     transform:translateX(0);
     transition:transform 0.15s ease;
@@ -615,9 +625,6 @@
 
   @media (max-width:360px){
     .header-row{gap:12px;}
-    .btn{padding:14px 12px; gap:10px;}
-    .btn .icon{width:32px; height:32px;}
-    .btn .icon svg{width:16px; height:16px;}
   }
 
   @media (prefers-reduced-motion: reduce){
@@ -737,7 +744,7 @@
             </svg>
           </span>
           <span class="label">
-            Parceria, publicidade e collabs
+            <span class="label-title">Parceria, publicidade e collabs</span>
             <span class="sub">Vamos trabalhar juntos?</span>
           </span>
           <span class="arrow">→</span>
@@ -753,7 +760,7 @@
           </svg>
         </span>
         <span class="label">
-          Veja aqui meu media kit
+          <span class="label-title">Veja aqui meu media kit</span>
           <span class="sub">Números, audiência e conteúdos!</span>
         </span>
         <span class="arrow">→</span>
@@ -770,7 +777,7 @@
             </svg>
           </span>
           <span class="label">
-            Crie aqui sua conta no Wise
+            <span class="label-title">Crie aqui sua conta no Wise</span>
             <span class="sub">Receba e envie dinheiro sem fronteiras!</span>
           </span>
           <span class="arrow">→</span>
@@ -800,7 +807,7 @@
       <h2 id="modalTitle" class="modal-title">Que tal trabalharmos juntos?</h2>
 
       <div class="modal-cards">
-        <a class="modal-card pink" href="https://wa.me/351900000000?text=Ol%C3%A1%20Thiago!%20Quero%20falar%20sobre%20uma%20PARCERIA." target="_blank" rel="noopener noreferrer">
+        <a class="modal-card pink" href="https://wa.me/351931909181?text=Ol%C3%A1%20Thiago!%20Quero%20falar%20sobre%20uma%20PARCERIA!" target="_blank" rel="noopener noreferrer">
           <span class="modal-card-icon">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M9 15L15 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
@@ -817,7 +824,7 @@
           </svg>
         </a>
 
-        <a class="modal-card yellow" href="https://wa.me/351900000000?text=Ol%C3%A1%20Thiago!%20Quero%20falar%20sobre%20PUBLICIDADE." target="_blank" rel="noopener noreferrer">
+        <a class="modal-card yellow" href="https://wa.me/351931909181?text=Ol%C3%A1%20Thiago!%20Quero%20falar%20sobre%20PUBLICIDADE!" target="_blank" rel="noopener noreferrer">
           <span class="modal-card-icon">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M3 10V14C3 14.55 3.45 15 4 15H6L11.5 19V5L6 9H4C3.45 9 3 9.45 3 10Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
@@ -834,7 +841,7 @@
           </svg>
         </a>
 
-        <a class="modal-card cyan" href="https://wa.me/351900000000?text=Ol%C3%A1%20Thiago!%20Quero%20falar%20sobre%20uma%20COLLAB." target="_blank" rel="noopener noreferrer">
+        <a class="modal-card cyan" href="https://wa.me/351931909181?text=Ol%C3%A1%20Thiago!%20Quero%20falar%20sobre%20uma%20COLLAB!" target="_blank" rel="noopener noreferrer">
           <span class="modal-card-icon">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="9" cy="12" r="5.5" stroke="currentColor" stroke-width="1.8"/>
