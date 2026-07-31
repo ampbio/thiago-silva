@@ -7,6 +7,7 @@
 <title>Thiago Silva em Portugal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
   :root{
     --pink:#f0177f;
@@ -642,6 +643,41 @@
     border:0;
     display:block;
   }
+  .mediakit-viewer{
+    position:relative;
+  }
+  .mediakit-loading{
+    position:absolute;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+    color:rgba(251,250,247,0.5);
+    font-family:'Poppins',sans-serif;
+    font-size:12px;
+    text-align:center;
+    padding:20px;
+    pointer-events:none;
+  }
+  .mediakit-pages-wrap{
+    width:100%;
+    height:100%;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    padding:6px;
+    opacity:0;
+    transition:opacity .3s;
+    -webkit-overflow-scrolling:touch;
+  }
+  .mediakit-pages-wrap canvas{
+    display:block;
+    border-radius:6px;
+    margin:0 auto;
+  }
 
   .mediakit-actions{
     margin-top:16px;
@@ -1217,8 +1253,9 @@
       <p class="modal-eyebrow"><span>Media Kit</span></p>
       <h2 id="mediaKitModalTitle" class="modal-title">Confira meu media kit</h2>
 
-      <div class="mediakit-viewer">
-        <iframe src="imagens/mediakit.pdf" title="Media Kit em PDF"></iframe>
+      <div class="mediakit-viewer" id="mediaKitViewer">
+        <iframe id="pdfFrame" src="" title="Media Kit em PDF" style="display:none;"></iframe>
+        <div class="mediakit-loading" id="mediaKitLoading">Carregando media kit...</div>
       </div>
 
       <div class="mediakit-actions">
@@ -1338,8 +1375,121 @@
     openModals.push({ overlay: overlay, close: close });
   }
 
+  // ---------- Media Kit: PDF ----------
+  // Desktop: iframe nativo (funciona liso). Mobile (Safari iOS, Chrome Android, webviews
+  // do Instagram/TikTok): iframe não renderiza PDF nativamente, então usamos PDF.js pra
+  // desenhar as páginas em <canvas>, com lazy-load via IntersectionObserver.
+  var mediaKitLoaded = false;
+  var isMobileDevice = function () { return window.matchMedia('(max-width: 768px)').matches; };
+
+  if (window.pdfjsLib) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+
+  function mediaKitError() {
+    var loading = document.getElementById('mediaKitLoading');
+    if (loading) {
+      loading.textContent = 'Use os botões abaixo para acessar o Media Kit.';
+    }
+  }
+
+  function renderPdfThumbnails() {
+    var loading = document.getElementById('mediaKitLoading');
+    var container = document.getElementById('mediaKitViewer');
+    var wrap = document.createElement('div');
+    wrap.className = 'mediakit-pages-wrap';
+    container.appendChild(wrap);
+
+    pdfjsLib.getDocument('imagens/mediakit.pdf').promise.then(function (pdf) {
+      var containerWidth = container.clientWidth - 12;
+      var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      var placeholders = [];
+      var pagesLoaded = [];
+
+      function loadPage(i) {
+        return pdf.getPage(i);
+      }
+
+      function renderPageIntoHolder(holder, page) {
+        var baseViewport = page.getViewport({ scale: 1 });
+        var scale = (containerWidth / baseViewport.width) * dpr;
+        var viewport = page.getViewport({ scale: scale });
+        var canvas = document.createElement('canvas');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        canvas.style.width = containerWidth + 'px';
+        canvas.style.height = (containerWidth * (baseViewport.height / baseViewport.width)) + 'px';
+        var ctx = canvas.getContext('2d');
+        return page.render({ canvasContext: ctx, viewport: viewport }).promise.then(function () {
+          holder.replaceWith(canvas);
+        });
+      }
+
+      var chain = Promise.resolve();
+      for (var i = 1; i <= pdf.numPages; i++) {
+        (function (pageNum) {
+          chain = chain.then(function () {
+            return loadPage(pageNum).then(function (page) {
+              var baseViewport = page.getViewport({ scale: 1 });
+              var cssHeight = containerWidth * (baseViewport.height / baseViewport.width);
+              var holder = document.createElement('div');
+              holder.dataset.pageNum = pageNum;
+              holder.style.cssText = 'width:' + containerWidth + 'px;height:' + cssHeight + 'px;border-radius:6px;background:#0a0912;';
+              wrap.appendChild(holder);
+              placeholders.push({ holder: holder, page: page });
+
+              if (pageNum === 1) {
+                return renderPageIntoHolder(holder, page).then(function () {
+                  wrap.style.opacity = '1';
+                  if (loading) { loading.style.display = 'none'; }
+                });
+              }
+            });
+          });
+        })(i);
+      }
+
+      chain.then(function () {
+        var observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              var holder = entry.target;
+              if (holder.dataset.rendered) { return; }
+              holder.dataset.rendered = '1';
+              observer.unobserve(holder);
+              var item = placeholders.filter(function (p) { return p.holder === holder; })[0];
+              if (item) { renderPageIntoHolder(item.holder, item.page); }
+            }
+          });
+        }, { root: wrap, rootMargin: '600px 0px' });
+
+        placeholders.forEach(function (item, idx) {
+          if (idx === 0) { item.holder.dataset.rendered = '1'; return; }
+          observer.observe(item.holder);
+        });
+      }).catch(mediaKitError);
+    }).catch(mediaKitError);
+  }
+
+  function openMediaKitContent() {
+    if (mediaKitLoaded) { return; }
+    mediaKitLoaded = true;
+    if (isMobileDevice() && window.pdfjsLib) {
+      renderPdfThumbnails();
+    } else {
+      var frame = document.getElementById('pdfFrame');
+      var loading = document.getElementById('mediaKitLoading');
+      frame.addEventListener('load', function () {
+        frame.style.display = 'block';
+        if (loading) { loading.style.display = 'none'; }
+      });
+      frame.addEventListener('error', mediaKitError);
+      frame.src = 'imagens/mediakit.pdf#toolbar=0&navpanes=0';
+    }
+  }
+
   setupModal('openModalBtn', 'closeModalBtn', 'modalOverlay');
-  setupModal('openMediaKitBtn', 'closeMediaKitBtn', 'mediaKitModalOverlay');
+  setupModal('openMediaKitBtn', 'closeMediaKitBtn', 'mediaKitModalOverlay', openMediaKitContent);
   setupModal('openCoberturaBtn', 'closeCoberturaBtn', 'coberturaModalOverlay', function () {
     if (typeof window.processCoberturaEmbeds === 'function') { window.processCoberturaEmbeds(); }
   });
