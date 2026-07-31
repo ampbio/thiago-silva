@@ -15,6 +15,8 @@
     --cyan-dark:#0e6f96;
     --yellow:#f3d820;
     --yellow-dark:#a8930c;
+    --whatsapp:#25d366;
+    --whatsapp-dark:#128c3e;
     --purple:#3a1264;
     --ink:#0a0912;
     --white:#fbfaf7;
@@ -324,6 +326,12 @@
     --shadow-color:var(--yellow-dark);
     outline:2px solid rgba(0,0,0,0.08);
   }
+  .btn-whatsapp{
+    background:var(--whatsapp);
+    color:#04250f;
+    --shadow-color:var(--whatsapp-dark);
+    outline:2px solid rgba(0,0,0,0.08);
+  }
 
   /* ---------- section label above the marquee ---------- */
   .marquee-label{
@@ -427,6 +435,16 @@
   .modal-overlay.open{
     opacity:1;
     visibility:visible;
+  }
+
+  /* modal de parceria/collabs: sempre centralizado, inclusive no mobile */
+  #modalOverlay{
+    align-items:center;
+  }
+  #modalOverlay .modal-panel{
+    border-radius:20px;
+    border-bottom:1px solid rgba(251,250,247,0.08);
+    box-shadow:0 20px 60px rgba(0,0,0,0.5);
   }
 
   .modal-panel{
@@ -586,14 +604,25 @@
   /* ---------- modal: media kit (PDF viewer) ---------- */
   .mediakit-panel{
     max-width:560px;
-    max-height:90vh;
-    overflow-y:auto;
+    width:100%;
+    height:92vh;
+    height:92dvh;
+    max-height:92vh;
+    max-height:92dvh;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+  }
+  .mediakit-panel .modal-eyebrow,
+  .mediakit-panel .modal-title{
+    flex:0 0 auto;
   }
 
   .mediakit-viewer{
     margin-top:18px;
     width:100%;
-    height:min(60vh, 520px);
+    flex:1 1 auto;
+    min-height:0;
     border-radius:12px;
     overflow:hidden;
     border:2px solid rgba(251,250,247,0.10);
@@ -608,19 +637,21 @@
 
   .mediakit-actions{
     margin-top:16px;
+    flex:0 0 auto;
     display:flex;
     flex-direction:row;
-    flex-wrap:wrap;
+    flex-wrap:nowrap;
     gap:10px;
   }
   .mediakit-actions .btn{
-    flex:1 1 140px;
+    flex:1 1 0;
     width:auto;
+    min-width:0;
     justify-content:center;
   }
 
   @media (min-width:640px){
-    .mediakit-panel{max-width:640px;}
+    .mediakit-panel{max-width:480px; height:88vh; height:88dvh; max-height:88vh; max-height:88dvh;}
   }
 
   /* ---------- socials ---------- */
@@ -828,9 +859,8 @@
         <button type="button" class="btn btn-pink" id="openModalBtn">
           <span class="icon">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M9 15L15 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-              <path d="M10.3 6.3L11.8 4.8C13.5 3.1 16.2 3.1 17.9 4.8C19.6 6.5 19.6 9.2 17.9 10.9L16.4 12.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-              <path d="M13.7 17.7L12.2 19.2C10.5 20.9 7.8 20.9 6.1 19.2C4.4 17.5 4.4 14.8 6.1 13.1L7.6 11.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M12 3.5C7.31 3.5 3.5 7.31 3.5 12c0 1.53.41 2.97 1.12 4.21L3.5 20.5l4.42-1.09A8.45 8.45 0 0012 20.5c4.69 0 8.5-3.81 8.5-8.5S16.69 3.5 12 3.5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+              <path d="M8.7 8.4c.15-.35.4-.35.65-.35h.5c.18 0 .4 0 .58.4.2.45.65 1.6.7 1.72.06.12.1.26.02.42-.08.16-.13.26-.25.4-.13.15-.27.33-.38.44-.13.13-.26.27-.11.53.15.27.68 1.14 1.47 1.85.99.9 1.83 1.18 2.1 1.31.27.13.43.11.6-.07.16-.18.68-.79.86-1.06.18-.27.36-.22.6-.13.25.09 1.58.75 1.85.88.27.13.45.2.51.31.07.12.07.68-.16 1.34-.24.66-1.38 1.27-1.9 1.34-.5.07-1.13.1-1.83-.12-.42-.13-.96-.3-1.65-.6-2.9-1.25-4.8-4.16-4.94-4.36-.14-.19-1.18-1.57-1.18-3 0-1.43.75-2.13 1.02-2.42z" fill="currentColor"/>
             </svg>
           </span>
           <span class="label">
@@ -980,16 +1010,15 @@
           <span class="arrow">→</span>
         </a>
 
-        <a class="btn btn-cyan" href="https://wa.me/351931909181?text=Ol%C3%A1%20Thiago!%20Vi%20seu%20media%20kit%20e%20quero%20falar%20com%20voc%C3%AA!" target="_blank" rel="noopener noreferrer">
+        <a class="btn btn-whatsapp" href="https://wa.me/351931909181?text=Ol%C3%A1%20Thiago!%20Vi%20seu%20media%20kit%20e%20quero%20falar%20com%20voc%C3%AA!" target="_blank" rel="noopener noreferrer">
           <span class="icon">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M9 15L15 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-              <path d="M10.3 6.3L11.8 4.8C13.5 3.1 16.2 3.1 17.9 4.8C19.6 6.5 19.6 9.2 17.9 10.9L16.4 12.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-              <path d="M13.7 17.7L12.2 19.2C10.5 20.9 7.8 20.9 6.1 19.2C4.4 17.5 4.4 14.8 6.1 13.1L7.6 11.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M12 3.5C7.31 3.5 3.5 7.31 3.5 12c0 1.53.41 2.97 1.12 4.21L3.5 20.5l4.42-1.09A8.45 8.45 0 0012 20.5c4.69 0 8.5-3.81 8.5-8.5S16.69 3.5 12 3.5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+              <path d="M8.7 8.4c.15-.35.4-.35.65-.35h.5c.18 0 .4 0 .58.4.2.45.65 1.6.7 1.72.06.12.1.26.02.42-.08.16-.13.26-.25.4-.13.15-.27.33-.38.44-.13.13-.26.27-.11.53.15.27.68 1.14 1.47 1.85.99.9 1.83 1.18 2.1 1.31.27.13.43.11.6-.07.16-.18.68-.79.86-1.06.18-.27.36-.22.6-.13.25.09 1.58.75 1.85.88.27.13.45.2.51.31.07.12.07.68-.16 1.34-.24.66-1.38 1.27-1.9 1.34-.5.07-1.13.1-1.83-.12-.42-.13-.96-.3-1.65-.6-2.9-1.25-4.8-4.16-4.94-4.36-.14-.19-1.18-1.57-1.18-3 0-1.43.75-2.13 1.02-2.42z" fill="currentColor"/>
             </svg>
           </span>
           <span class="label">
-            <span class="label-title">Entre em contato agora</span>
+            <span class="label-title">Fale Comigo!</span>
           </span>
           <span class="arrow">→</span>
         </a>
