@@ -628,6 +628,7 @@
   }
 
   .mediakit-viewer{
+    position:relative;
     margin-top:18px;
     width:100%;
     flex:1 1 auto;
@@ -642,9 +643,6 @@
     height:100%;
     border:0;
     display:block;
-  }
-  .mediakit-viewer{
-    position:relative;
   }
   .mediakit-loading{
     position:absolute;
@@ -1404,11 +1402,6 @@
       var containerWidth = container.clientWidth - 12;
       var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       var placeholders = [];
-      var pagesLoaded = [];
-
-      function loadPage(i) {
-        return pdf.getPage(i);
-      }
 
       function renderPageIntoHolder(holder, page) {
         var baseViewport = page.getViewport({ scale: 1 });
@@ -1429,7 +1422,7 @@
       for (var i = 1; i <= pdf.numPages; i++) {
         (function (pageNum) {
           chain = chain.then(function () {
-            return loadPage(pageNum).then(function (page) {
+            return pdf.getPage(pageNum).then(function (page) {
               var baseViewport = page.getViewport({ scale: 1 });
               var cssHeight = containerWidth * (baseViewport.height / baseViewport.width);
               var holder = document.createElement('div');
