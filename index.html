@@ -1407,14 +1407,42 @@
         var baseViewport = page.getViewport({ scale: 1 });
         var scale = (containerWidth / baseViewport.width) * dpr;
         var viewport = page.getViewport({ scale: scale });
+        var cssHeight = containerWidth * (baseViewport.height / baseViewport.width);
+
+        var pageWrap = document.createElement('div');
+        pageWrap.style.cssText = 'position:relative;width:' + containerWidth + 'px;height:' + cssHeight + 'px;';
+
         var canvas = document.createElement('canvas');
         canvas.width = viewport.width;
         canvas.height = viewport.height;
         canvas.style.width = containerWidth + 'px';
-        canvas.style.height = (containerWidth * (baseViewport.height / baseViewport.width)) + 'px';
+        canvas.style.height = cssHeight + 'px';
+        canvas.style.display = 'block';
         var ctx = canvas.getContext('2d');
+        pageWrap.appendChild(canvas);
+
         return page.render({ canvasContext: ctx, viewport: viewport }).promise.then(function () {
-          holder.replaceWith(canvas);
+          return page.getAnnotations();
+        }).then(function (annotations) {
+          var cssViewport = page.getViewport({ scale: containerWidth / baseViewport.width });
+          annotations.forEach(function (ann) {
+            if (ann.subtype !== 'Link' || !ann.url) { return; }
+            var rect = pdfjsLib.Util.normalizeRect(ann.rect);
+            var p1 = cssViewport.convertToViewportPoint(rect[0], rect[1]);
+            var p2 = cssViewport.convertToViewportPoint(rect[2], rect[3]);
+            var left = Math.min(p1[0], p2[0]);
+            var top = Math.min(p1[1], p2[1]);
+            var w = Math.abs(p2[0] - p1[0]);
+            var h = Math.abs(p2[1] - p1[1]);
+            var linkEl = document.createElement('a');
+            linkEl.href = ann.url;
+            linkEl.target = '_blank';
+            linkEl.rel = 'noopener noreferrer';
+            linkEl.style.cssText = 'position:absolute;left:' + left + 'px;top:' + top + 'px;width:' + w + 'px;height:' + h + 'px;display:block;';
+            pageWrap.appendChild(linkEl);
+          });
+        }).then(function () {
+          holder.replaceWith(pageWrap);
         });
       }
 
