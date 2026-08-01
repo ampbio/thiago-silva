@@ -10,7 +10,6 @@
 <!-- pdf.js não é mais carregado aqui de forma bloqueante: é injetado sob demanda
      (idle ou intenção de toque no botão do media kit), ver script no fim do body. -->
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-<link rel="preload" as="image" href="imagens/mediakit-poster.jpg">
 <style>
   :root{
     --pink:#f0177f;
@@ -640,41 +639,34 @@
     border:0;
     display:block;
   }
-  .mediakit-poster{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    object-position:top center;
-    z-index:1;
-    opacity:1;
-    transition:opacity .35s ease;
-    background:#0a0912;
-  }
-  .mediakit-poster.is-hidden{
-    opacity:0;
-    pointer-events:none;
-  }
   .mediakit-loading{
     position:absolute;
-    left:50%;
-    bottom:14px;
-    transform:translateX(-50%);
+    inset:0;
     z-index:2;
     display:flex;
+    flex-direction:column;
     align-items:center;
-    gap:8px;
-    color:rgba(251,250,247,0.85);
-    background:rgba(10,9,18,0.72);
-    border:1px solid rgba(251,250,247,0.14);
+    justify-content:center;
+    gap:14px;
+    color:rgba(251,250,247,0.75);
     font-family:'Poppins',sans-serif;
-    font-size:11px;
+    font-size:13px;
+    line-height:1.5;
     text-align:center;
-    padding:8px 14px;
-    border-radius:999px;
+    padding:20px;
     pointer-events:none;
     transition:opacity .25s ease;
+  }
+  .mediakit-spinner{
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    border:3px solid rgba(251,250,247,0.18);
+    border-top-color:var(--yellow);
+    animation:mediakit-spin 0.8s linear infinite;
+  }
+  @keyframes mediakit-spin{
+    to{ transform:rotate(360deg); }
   }
   .mediakit-pages-wrap{
     width:100%;
@@ -1269,9 +1261,11 @@
       <h2 id="mediaKitModalTitle" class="modal-title">Confira meu media kit</h2>
 
       <div class="mediakit-viewer" id="mediaKitViewer">
-        <img class="mediakit-poster" id="mediaKitPoster" src="imagens/mediakit-poster.jpg" alt="Prévia do media kit" loading="eager" fetchpriority="high">
         <iframe id="pdfFrame" src="" title="Media Kit em PDF" style="display:none;"></iframe>
-        <div class="mediakit-loading" id="mediaKitLoading">Carregando o restante...</div>
+        <div class="mediakit-loading" id="mediaKitLoading">
+          <span class="mediakit-spinner" aria-hidden="true"></span>
+          <span>Carregando media kit...<br>aguarde alguns segundos</span>
+        </div>
       </div>
 
       <div class="mediakit-actions">
@@ -1521,11 +1515,6 @@
     }
   }
 
-  function hideMediaKitPoster() {
-    var poster = document.getElementById('mediaKitPoster');
-    if (poster) { poster.classList.add('is-hidden'); }
-  }
-
   function renderPdfThumbnails(pdfData) {
     var loading = document.getElementById('mediaKitLoading');
     var container = document.getElementById('mediaKitViewer');
@@ -1599,7 +1588,6 @@
                 return renderPageIntoHolder(holder, page).then(function () {
                   wrap.style.opacity = '1';
                   if (loading) { loading.style.display = 'none'; }
-                  hideMediaKitPoster();
                 });
               }
             });
@@ -1651,7 +1639,6 @@
       frame.addEventListener('load', function () {
         frame.style.display = 'block';
         if (loading) { loading.style.display = 'none'; }
-        hideMediaKitPoster();
       });
       frame.addEventListener('error', mediaKitError);
 
