@@ -7,7 +7,10 @@
 <title>Thiago Silva em Portugal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" integrity="sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e" crossorigin="anonymous"></script>
+<!-- pdf.js não é mais carregado aqui de forma bloqueante: é injetado sob demanda
+     (idle ou intenção de toque no botão do media kit), ver script no fim do body. -->
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<link rel="preload" as="image" href="imagens/mediakit-poster.jpg">
 <style>
   :root{
     --pink:#f0177f;
@@ -637,20 +640,41 @@
     border:0;
     display:block;
   }
-  .mediakit-loading{
+  .mediakit-poster{
     position:absolute;
     inset:0;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:12px;
-    color:rgba(251,250,247,0.5);
-    font-family:'Poppins',sans-serif;
-    font-size:12px;
-    text-align:center;
-    padding:20px;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:top center;
+    z-index:1;
+    opacity:1;
+    transition:opacity .35s ease;
+    background:#0a0912;
+  }
+  .mediakit-poster.is-hidden{
+    opacity:0;
     pointer-events:none;
+  }
+  .mediakit-loading{
+    position:absolute;
+    left:50%;
+    bottom:14px;
+    transform:translateX(-50%);
+    z-index:2;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    color:rgba(251,250,247,0.85);
+    background:rgba(10,9,18,0.72);
+    border:1px solid rgba(251,250,247,0.14);
+    font-family:'Poppins',sans-serif;
+    font-size:11px;
+    text-align:center;
+    padding:8px 14px;
+    border-radius:999px;
+    pointer-events:none;
+    transition:opacity .25s ease;
   }
   .mediakit-pages-wrap{
     width:100%;
@@ -1245,8 +1269,9 @@
       <h2 id="mediaKitModalTitle" class="modal-title">Confira meu media kit</h2>
 
       <div class="mediakit-viewer" id="mediaKitViewer">
+        <img class="mediakit-poster" id="mediaKitPoster" src="imagens/mediakit-poster.jpg" alt="Prévia do media kit" loading="eager" fetchpriority="high">
         <iframe id="pdfFrame" src="" title="Media Kit em PDF" style="display:none;"></iframe>
-        <div class="mediakit-loading" id="mediaKitLoading">Carregando media kit...</div>
+        <div class="mediakit-loading" id="mediaKitLoading">Carregando o restante...</div>
       </div>
 
       <div class="mediakit-actions">
@@ -1408,12 +1433,86 @@
   // Desktop: iframe nativo (funciona liso). Mobile (Safari iOS, Chrome Android, webviews
   // do Instagram/TikTok): iframe não renderiza PDF nativamente, então usamos PDF.js pra
   // desenhar as páginas em <canvas>, com lazy-load via IntersectionObserver.
+  //
+  // Priorização de carregamento: em vez de só começar a baixar/parsear o PDF quando o
+  // modal abre, a gente "esquenta" isso com antecedência em dois momentos:
+  //   1) num idle callback logo depois que a página termina de carregar (não disputa
+  //      recursos com o conteúdo principal);
+  //   2) no touchstart/mouseenter do botão do media kit, que dispara ANTES do click
+  //      (que só vem depois da animação do modal abrir).
+  // Assim, na hora em que o modal realmente abre, boa parte (ou tudo) já está pronto.
   var mediaKitLoaded = false;
   var isMobileDevice = function () { return window.matchMedia('(max-width: 768px)').matches; };
 
-  if (window.pdfjsLib) {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  var PDF_JS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+  var PDF_JS_INTEGRITY = 'sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e';
+  var PDF_WORKER_URL = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  var PDF_FILE_URL = 'imagens/mediakit.pdf';
+
+  var pdfJsLoadPromise = null;
+  function loadPdfJsLib() {
+    if (pdfJsLoadPromise) { return pdfJsLoadPromise; }
+    pdfJsLoadPromise = new Promise(function (resolve, reject) {
+      if (window.pdfjsLib) {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_WORKER_URL;
+        resolve(window.pdfjsLib);
+        return;
+      }
+      var script = document.createElement('script');
+      script.src = PDF_JS_URL;
+      script.integrity = PDF_JS_INTEGRITY;
+      script.crossOrigin = 'anonymous';
+      script.onload = function () {
+        if (!window.pdfjsLib) { reject(new Error('pdfjsLib indisponível após load')); return; }
+        pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_WORKER_URL;
+        resolve(window.pdfjsLib);
+      };
+      script.onerror = function () { reject(new Error('Falha ao carregar pdf.js')); };
+      document.head.appendChild(script);
+    });
+    return pdfJsLoadPromise;
   }
+
+  // Prefetch dos bytes do PDF, guardado como ArrayBuffer pra pdf.js (mobile) e pro
+  // iframe (desktop, via blob URL) reaproveitarem sem baixar de novo.
+  var pdfDataPromise = null;
+  function prefetchMediaKitPdf() {
+    if (pdfDataPromise) { return pdfDataPromise; }
+    pdfDataPromise = fetch(PDF_FILE_URL, { credentials: 'omit' })
+      .then(function (res) {
+        if (!res.ok) { throw new Error('HTTP ' + res.status); }
+        return res.arrayBuffer();
+      })
+      .catch(function (err) {
+        // Não deixa o prefetch falho travar nada: o fluxo original (buscar direto
+        // a URL) continua funcionando como fallback.
+        pdfDataPromise = null;
+        throw err;
+      });
+    return pdfDataPromise;
+  }
+
+  function warmUpMediaKit() {
+    loadPdfJsLib().catch(function () {});
+    prefetchMediaKitPdf().catch(function () {});
+  }
+
+  // Momento 1: idle, depois que a página principal já carregou.
+  window.addEventListener('load', function () {
+    if (window.requestIdleCallback) {
+      requestIdleCallback(warmUpMediaKit, { timeout: 3000 });
+    } else {
+      setTimeout(warmUpMediaKit, 1500);
+    }
+  });
+
+  // Momento 2: intenção de toque/clique no botão, antes do click "oficial".
+  (function () {
+    var btn = document.getElementById('openMediaKitBtn');
+    if (!btn) { return; }
+    btn.addEventListener('touchstart', warmUpMediaKit, { passive: true });
+    btn.addEventListener('mouseenter', warmUpMediaKit);
+  })();
 
   function mediaKitError() {
     var loading = document.getElementById('mediaKitLoading');
@@ -1422,14 +1521,20 @@
     }
   }
 
-  function renderPdfThumbnails() {
+  function hideMediaKitPoster() {
+    var poster = document.getElementById('mediaKitPoster');
+    if (poster) { poster.classList.add('is-hidden'); }
+  }
+
+  function renderPdfThumbnails(pdfData) {
     var loading = document.getElementById('mediaKitLoading');
     var container = document.getElementById('mediaKitViewer');
     var wrap = document.createElement('div');
     wrap.className = 'mediakit-pages-wrap';
     container.appendChild(wrap);
 
-    pdfjsLib.getDocument('imagens/mediakit.pdf').promise.then(function (pdf) {
+    var docSource = pdfData ? { data: pdfData } : PDF_FILE_URL;
+    pdfjsLib.getDocument(docSource).promise.then(function (pdf) {
       var containerWidth = container.clientWidth - 12;
       var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       var placeholders = [];
@@ -1494,6 +1599,7 @@
                 return renderPageIntoHolder(holder, page).then(function () {
                   wrap.style.opacity = '1';
                   if (loading) { loading.style.display = 'none'; }
+                  hideMediaKitPoster();
                 });
               }
             });
@@ -1526,17 +1632,41 @@
   function openMediaKitContent() {
     if (mediaKitLoaded) { return; }
     mediaKitLoaded = true;
-    if (isMobileDevice() && window.pdfjsLib) {
-      renderPdfThumbnails();
+
+    if (isMobileDevice()) {
+      // Garante que a lib esteja pronta (se o warm-up ainda não terminou, carrega agora).
+      loadPdfJsLib().then(function () {
+        // Usa os bytes já pré-buscados, se estiverem prontos; senão renderiza mesmo
+        // assim e deixa o pdf.js buscar a URL normalmente (fallback original).
+        if (pdfDataPromise) {
+          pdfDataPromise.then(function (buf) { renderPdfThumbnails(buf); })
+            .catch(function () { renderPdfThumbnails(); });
+        } else {
+          renderPdfThumbnails();
+        }
+      }).catch(mediaKitError);
     } else {
       var frame = document.getElementById('pdfFrame');
       var loading = document.getElementById('mediaKitLoading');
       frame.addEventListener('load', function () {
         frame.style.display = 'block';
         if (loading) { loading.style.display = 'none'; }
+        hideMediaKitPoster();
       });
       frame.addEventListener('error', mediaKitError);
-      frame.src = 'imagens/mediakit.pdf#toolbar=0&navpanes=0';
+
+      // No desktop, se já temos os bytes em cache, usa um blob URL local (evita um
+      // segundo download); senão, comportamento original de apontar pra URL do arquivo.
+      if (pdfDataPromise) {
+        pdfDataPromise.then(function (buf) {
+          var blobUrl = URL.createObjectURL(new Blob([buf], { type: 'application/pdf' }));
+          frame.src = blobUrl + '#toolbar=0&navpanes=0';
+        }).catch(function () {
+          frame.src = PDF_FILE_URL + '#toolbar=0&navpanes=0';
+        });
+      } else {
+        frame.src = PDF_FILE_URL + '#toolbar=0&navpanes=0';
+      }
     }
   }
 
